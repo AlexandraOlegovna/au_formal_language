@@ -1,0 +1,60 @@
+-- This file has been generated from package.yaml by hpack version 0.14.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           LLang
+version:        0.1.0.0
+description:    Please see the README on Github at <https://github.com/githubuser/LLang#readme>
+author:         AlexandraOlegovna
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+-- extra-source-files:
+--     ChangeLog.md
+--     README.md
+--
+-- source-repository head
+--   type: git
+--   location: https://github.com/githubuser/LLang
+
+name:           LLang
+version:        0.1.0.0
+description:    Please see the README on Github at <https://github.com/githubuser/LLang#readme>
+author:         AlexandraOlegovna
+license:        BSD3
+build-type:     Simple
+cabal-version:  >= 1.10
+
+-- extra-source-files:
+--     ChangeLog.md
+--     README.md
+--
+-- source-repository head
+--   type: git
+--   location: https://github.com/githubuser/LLang
+
+
+executable LLang
+  main-is: Main.hs
+  hs-source-dirs: app
+  other-modules: Lexer
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -fno-warn-tabs
+  build-tools: happy, alex
+  build-depends:
+      base >= 4.7 && < 5
+      , array
+      , parsec
+  default-language: Haskell2010
+
+test-suite LLang-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >= 4.7 && < 5
+    , LLang
+  default-language: Haskell2010
