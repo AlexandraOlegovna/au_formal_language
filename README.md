@@ -23,6 +23,6 @@ function min (x, y) {
   }
 }
 
-x := min(5,7;)
+x := min(5,7);
 write(x);
 ```
