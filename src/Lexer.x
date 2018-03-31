@@ -17,7 +17,10 @@ tokens :-
 	$white+									;
 	\(										{ tok (\p s -> OPEN_PAR p) }
 	\)										{ tok (\p s -> CLOSE_PAR p) }
+	\{										{ tok (\p s -> OPEN_BRACE p) }
+	\}										{ tok (\p s -> CLOSE_BRACE p) }
 	\;										{ tok (\p s -> SEMI p) }
+	\,										{ tok (\p s -> COMMA p) }
 	if										{ tok (\p s -> IF p) }
 	then									{ tok (\p s -> THEN p) }
 	else									{ tok (\p s -> ELSE p) }
@@ -25,6 +28,8 @@ tokens :-
 	do										{ tok (\p s -> DO p) }
 	read									{ tok (\p s -> READ p) }
 	write									{ tok (\p s -> WRITE p) }
+	function								{ tok (\p s -> FUNCTION p) }
+	return									{ tok (\p s -> RETURN p) }
 	true									{ tok (\p s -> TRUE p) }
 	false 									{ tok (\p s -> FALSE p) }
 	\:\=									{ tok (\p s -> ASSIGN p) }
@@ -80,9 +85,14 @@ data Token =
 	DO AlexPosn			|
 	READ AlexPosn		|
 	WRITE AlexPosn		|
+	FUNCTION AlexPosn	|
+	RETURN AlexPosn		|
 	OPEN_PAR AlexPosn	|
 	CLOSE_PAR AlexPosn	|
+	OPEN_BRACE AlexPosn	|
+	CLOSE_BRACE AlexPosn|
 	SEMI AlexPosn		|
+	COMMA AlexPosn		|
 	TRUE AlexPosn		|
 	FALSE AlexPosn		|
 	ASSIGN AlexPosn		|
@@ -100,9 +110,14 @@ instance Show Token where
 	show (DO (AlexPn x z y)) = "KW_Do(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "do" - 1) ++ ")"
 	show (READ (AlexPn x z y)) = "KW_Read(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "read" - 1) ++ ")"
 	show (WRITE (AlexPn x z y)) = "KW_Write(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "write" - 1) ++ ")"
+	show (FUNCTION (AlexPn x z y)) = "KW_Function(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "function" - 1) ++ ")"
+	show (RETURN (AlexPn x z y)) = "KW_Return(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "return" - 1) ++ ")"
 	show (OPEN_PAR (AlexPn x z y)) = "KW_Open_Par(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "(" - 1) ++ ")"
 	show (CLOSE_PAR (AlexPn x z y)) = "KW_Close_Par(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length ")" - 1) ++ ")"
+	show (OPEN_BRACE (AlexPn x z y)) = "KW_Open_Brace(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "{" - 1) ++ ")"
+	show (CLOSE_BRACE (AlexPn x z y)) = "KW_Close_Brace(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "}" - 1) ++ ")"
 	show (SEMI (AlexPn x z y)) = "Colon(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length ";" - 1) ++ ")"
+	show (COMMA (AlexPn x z y)) = "Comma(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "," - 1) ++ ")"
 	show (TRUE (AlexPn x z y)) = "True(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "true" - 1) ++ ")"
 	show (FALSE (AlexPn x z y)) = "False(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "false" - 1) ++ ")"
 	show (ASSIGN (AlexPn x z y)) = "Assign(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length ":=" - 1) ++ ")"
