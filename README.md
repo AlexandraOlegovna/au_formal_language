@@ -1,6 +1,6 @@
 # LLang
 
-Quick start: ```stack build && stack exec -- LLang```
+Quick start: ```stack build && stack exec -- LLang ~/example.txt```
 
 File with program example: ```example.txt```
 
