@@ -34,7 +34,7 @@ tokens :-
 	false 									{ tok (\p s -> FALSE p) }
 	\:\=									{ tok (\p s -> ASSIGN p) }
 	"//".*                          		{ tok (\p s -> COMMENTS p s) }
-	($digit+ | \. | $digit+ \.) ($digit+ | e (\+|\-)? $digit+ | $digit+ e (\+|\-)? $digit+)?
+	(\-|\+)? ($digit+ | \. | $digit+ \.) ($digit+ | e (\+|\-)? $digit+ | $digit+ e (\+|\-)? $digit+)?
 											{ tok (\p s -> let Right x = parse float "" (simplify s) in NUM p x (length s)) }
 	(\+ | \- | \* | \/ | \% | \=\= | \!\= | \> | \>\= | \< | \<\= | \&\& | \|\|)
 											{ tok (\p s -> OP p (convert s) (length s)) }
@@ -62,19 +62,19 @@ convert "||" = Or
 
 (<++>) a b = (++) <$> a <*> b
 (<:>) a b = (:) <$> a <*> b
-
 number = many1 digit
 plus = char '+' *> number
 minus = char '-' <:> number
 integer = plus <|> minus <|> number
 
-float :: Stream s m Char => ParsecT s u m Float
-float = fmap rd $ number <++> decimal <++> exponent
+float = fmap rd $ integer <++> decimal <++> exponent
     where rd       = read :: String -> Float
           decimal  = option "" $ char '.' <:> number
-          exponent = option "" $ oneOf "e" <:> integer
+          exponent = option "" $ oneOf "eE" <:> integer
 
-simplify x = "0" ++ (filter (\s -> not $ s == '_') x)
+simplify ('-' : num) = "-" ++ "0" ++ (filter (\s -> not $ s == '_') num)
+simplify ('+' : num) = "+" ++ "0" ++ (filter (\s -> not $ s == '_') num)
+simplify 		num  = 		  "0" ++ (filter (\s -> not $ s == '_') num)
 
 -- The token type:
 data Token =
