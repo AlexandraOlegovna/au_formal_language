@@ -36,7 +36,7 @@ tokens :-
 	"//".*                          		{ tok (\p s -> COMMENTS p s) }
 	($digit+ | \. | $digit+ \.) ($digit+ | e (\+|\-)? $digit+)?
 											{ tok (\p s -> let Right x = parse float "" (simplify s) in NUM p x (length s)) }
-	(\+ | \- | \* | \\ | \% | \=\= | \!\= | \> | \>\= | \< | \<\= | \&\& | \|\|)
+	(\+ | \- | \* | \/ | \% | \=\= | \!\= | \> | \>\= | \< | \<\= | \&\& | \|\|)
 											{ tok (\p s -> OP p (convert s) (length s)) }
 	($alpha | \_) [$alpha $digit \_ ]*		{ tok (\p s -> IDENT p s) }
 
