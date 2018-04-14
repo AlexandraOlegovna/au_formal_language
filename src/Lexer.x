@@ -34,8 +34,10 @@ tokens :-
 	false 									{ tok (\p s -> FALSE p) }
 	\:\=									{ tok (\p s -> ASSIGN p) }
 	"//".*                          		{ tok (\p s -> COMMENTS p s) }
+	"/*" [.\n]* "*/"                		{ tok (\p s -> ML_COMMENTS p s) }
 	(\-|\+)? ($digit+ | \. | $digit+ \.) ($digit+ | e (\+|\-)? $digit+ | $digit+ e (\+|\-)? $digit+)?
 											{ tok (\p s -> let Right x = parse float "" (simplify s) in NUM p x (length s)) }
+	\*\*									{ tok (\p s -> OP p (convert s) (length s)) }
 	(\+ | \- | \* | \/ | \% | \=\= | \!\= | \> | \>\= | \< | \<\= | \&\& | \|\|)
 											{ tok (\p s -> OP p (convert s) (length s)) }
 	($alpha | \_) [$alpha $digit \_ ]*		{ tok (\p s -> IDENT p s) }
@@ -43,7 +45,7 @@ tokens :-
 {
 tok f p s = f p s
 
-data Op = Plus | Minus | Mult | Div | Mod | Eq | Ne | Gt | Ge | Lt | Le | And | Or
+data Op = Plus | Minus | Mult | Div | Mod | Pow | Eq | Ne | Gt | Ge | Lt | Le | And | Or
 	deriving (Eq, Show)
 
 convert "+" = Plus
@@ -51,6 +53,7 @@ convert "-" = Minus
 convert "*" = Mult
 convert "/" = Div
 convert "%" = Mod
+convert "**" = Pow
 convert "==" = Eq
 convert "!=" = Ne
 convert ">" = Gt
@@ -99,6 +102,7 @@ data Token =
 	OP AlexPosn Op Int	|
 	IDENT AlexPosn String	|
 	COMMENTS AlexPosn String |
+	ML_COMMENTS AlexPosn String |
 	NUM AlexPosn Float Int
 	deriving (Eq)
 
@@ -123,6 +127,7 @@ instance Show Token where
 	show (ASSIGN (AlexPn x z y)) = "Assign(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length ":=" - 1) ++ ")"
 	show (OP (AlexPn x z y) o l) = "Op(" ++ show o ++ ", " ++ show z ++ ", " ++ show y ++ ", " ++ show (y + l - 1) ++ ")"
 	show (COMMENTS (AlexPn x z y) s) = "Comments(" ++ show s ++ ", " ++ show z ++ ", " ++ show y ++ ", " ++ show (y + (length s) - 1) ++ ")"
+	show (ML_COMMENTS (AlexPn x z y) s) = "ML_Comments(" ++ show s ++ ", " ++ show z ++ ", " ++ show y ++ ", " ++ show (y + (length s) - 1) ++ ")"
 	show (IDENT (AlexPn x z y) s) = "Ident(" ++ show s ++ ", " ++ show z ++ ", " ++ show y ++", "++ show (y + (length s) - 1) ++ ")"
 	show (NUM (AlexPn x z y) f l) = "Num(" ++ show f ++ ", " ++ show z ++ ", " ++ show y ++ ", " ++ show (y + l - 1) ++ ")"
 
