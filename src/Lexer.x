@@ -34,7 +34,8 @@ tokens :-
 	false 									{ tok (\p s -> FALSE p) }
 	\:\=									{ tok (\p s -> ASSIGN p) }
 	"//".*                          		{ tok (\p s -> COMMENTS p s) }
-	"/*" [.\n]* "*/"                		{ tok (\p s -> ML_COMMENTS p s) }
+	"/*" ([~[\*] \n])* [\*]+ (~[\*\/] ([~[\*] \n])* [\*]+)* "/"
+											{ tok (\p s -> ML_COMMENTS p s) }
 	(\-|\+)? ($digit+ | \. | $digit+ \.) ($digit+ | e (\+|\-)? $digit+ | $digit+ e (\+|\-)? $digit+)?
 											{ tok (\p s -> let Right x = parse float "" (simplify s) in NUM p x (length s)) }
 	\*\*									{ tok (\p s -> OP p (convert s) (length s)) }
