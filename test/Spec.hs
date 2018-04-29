@@ -1,9 +1,13 @@
 import Lexer
+import Parser
+import Expr
 
 main :: IO ()
 main = print $ runTests
 
 runTests = (==) [] $ filter (\x -> x == False) $ concat [testWords, testOp, testIdent, testNum, testDelimetr, testExamples]
+
+runFileTest = cmpFiles "test/test1.txt" "test/result1.txt" >>= print
 
 testWords = [test1, test2, test3, test4, test5, test6, test7]
 test1 = show (fromStringToTokens "read") == ("[KW_Read(1, 1, 4)]")
@@ -61,3 +65,10 @@ test37 = show (fromStringToTokens "if 3 \n 7 \n else 8 + 9") == ("[KW_If(1, 1, 2
 test38 = show (fromStringToTokens "1e10 + 5 - _a \nm") == ("[Num(1.0e10, 1, 1, 4),Op(Plus, 1, 6, 6),Num(5.0, 1, 8, 8),Op(Minus, 1, 10, 10),Ident(\"_a\", 1, 12, 13),Ident(\"m\", 2, 1, 1)]")
 
 test39 = show (fromStringToTokens "write f is x else ; while 7 != do 5 >= 8; \n // 5%6") == ("[KW_Write(1, 1, 5),Ident(\"f\", 1, 7, 7),Ident(\"is\", 1, 9, 10),Ident(\"x\", 1, 12, 12),KW_Else(1, 14, 17),Colon(1, 19, 19),KW_While(1, 21, 25),Num(7.0, 1, 27, 27),Op(Ne, 1, 29, 30),KW_Do(1, 32, 33),Num(5.0, 1, 35, 35),Op(Ge, 1, 37, 38),Num(8.0, 1, 40, 40),Colon(1, 41, 41),Comments(\"// 5%6\", 2, 2, 7)]")
+
+
+cmpFiles a b = do
+    aContents <- readFile a
+    let res = show $ parseExpr aContents
+    bContents <- readFile b
+    return (res == bContents)

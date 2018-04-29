@@ -14,11 +14,6 @@ main = do
     --     print . fromStringToTokens
 
 
-showAST :: (String -> Prog) -> String -> IO ()
-showAST parser input = do
-    let ast = parser input
-    print ast
-
 -- main :: IO ()
 -- main = do
 --     input <- getContents

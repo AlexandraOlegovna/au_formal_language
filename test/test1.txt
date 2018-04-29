@@ -1,0 +1,38 @@
+/* function min (x, y) { return x < y;}
+ function max () {}
+ function min (x, y) {
+     if x then {return f;} else {return x;} }
+ }
+ x := min(5,7);
+ write(x);
+*/
+
+function min (x, y) {
+    if x ** 7 ** y ** z <= u - 9*5
+    then /* then branch */
+    {
+        return x;
+    }
+    /* else branch */
+    else
+    {
+        return y;
+    }
+}
+
+
+function test1 () {
+    while f + 8 && 6-9 do { //loop
+        if (x ** y) then { if (7 <= 8+9) >= (10 < x) then {read(9);} else {x:=min(7,9-0);} } else { while 7 do{ read(y);}}
+    }
+}
+
+x := min(5,7);
+write(-x);
+
+read(file);
+i := 0;
+while i < 100 do {
+    read( file );
+    i := i + 1;
+}

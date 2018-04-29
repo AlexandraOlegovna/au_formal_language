@@ -1,0 +1,40 @@
+AST
+
+Functions Declarations:
+
+Func:
+  "min" ["x","y"]
+Body:
+  If
+    ( Le ( Pow Var "x" ( Pow Num 7.0 ( Pow Var "y" Var "z" ) ) ) ( Mult ( Minus Var "u" Num 9.0 ) Num 5.0 ) )
+  Then
+    Return Var "x"
+  Else
+    Return Var "y"
+
+Func:
+  "test1" []
+Body:
+  While   ( And ( Plus Var "f" Num 8.0 ) ( Minus Num 6.0 Num 9.0 ) )
+    If
+      ( Pow Var "x" Var "y" )
+    Then
+      If
+        ( Ge ( Le Num 7.0 ( Plus Num 8.0 Num 9.0 ) ) ( Lt Num 10.0 Var "x" ) )
+      Then
+        Read Num 9.0
+      Else
+        Assign Var "x" Call "min" [Num 7.0,( Minus Num 9.0 Num 0.0 )]
+    Else
+      While       Num 7.0
+        Read Var "y"
+
+Statments:
+
+Assign Var "x" Call "min" [Num 5.0,Num 7.0]
+Write ( Minus Var "x" )
+Read Var "file"
+Assign Var "i" Num 0.0
+While ( Lt Var "i" Num 100.0 )
+  Read Var "file"
+  Assign Var "i" ( Plus Var "i" Num 1.0 )

@@ -10,7 +10,7 @@ import Control.Applicative hiding ((<|>))
 }
 %wrapper "posn"
 $digit = 0-9
-$alpha = [a-z]
+$alpha = [a-zA-Z]
 
 tokens :-
 
@@ -34,7 +34,7 @@ tokens :-
 	false 									{ tok (\p s -> FALSE p) }
 	\:\=									{ tok (\p s -> ASSIGN p) }
 	"//".*                          		{ tok (\p s -> COMMENTS p s) }
-	"/*" ([~[\*] \n])* [\*]+ (~[\*\/] ([~[\*] \n])* [\*]+)* "/"
+	"/*" ([~[\*] \n])* [\*]+ ((~[\*\/]|\n) ([~[\*] \n])* [\*]+)* "/"
 											{ tok (\p s -> ML_COMMENTS p s) }
 	(\+ | \- | \* | \/ | \% | \=\= | \!\= | \> | \>\= | \< | \<\= | \&\& | \|\|)
 											{ tok (\p s -> OP p (convert s) (length s)) }
