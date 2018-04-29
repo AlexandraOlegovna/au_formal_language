@@ -1,7 +1,7 @@
 {
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE FlexibleContexts #-}
-module Lexer (Token(..), AlexPosn(..), alexScanTokens, fromStringToTokens) where
+module Lexer (Token(..), Op(..), AlexPosn(..), alexScanTokens, fromStringToTokens) where
 
 import Control.Monad
 import Text.Parsec
@@ -36,11 +36,11 @@ tokens :-
 	"//".*                          		{ tok (\p s -> COMMENTS p s) }
 	"/*" ([~[\*] \n])* [\*]+ (~[\*\/] ([~[\*] \n])* [\*]+)* "/"
 											{ tok (\p s -> ML_COMMENTS p s) }
-	(\-|\+)? ($digit+ | \. | $digit+ \.) ($digit+ | e (\+|\-)? $digit+ | $digit+ e (\+|\-)? $digit+)?
-											{ tok (\p s -> let Right x = parse float "" (simplify s) in NUM p x (length s)) }
-	\*\*									{ tok (\p s -> OP p (convert s) (length s)) }
 	(\+ | \- | \* | \/ | \% | \=\= | \!\= | \> | \>\= | \< | \<\= | \&\& | \|\|)
 											{ tok (\p s -> OP p (convert s) (length s)) }
+	($digit+ | \. | $digit+ \.) ($digit+ | e (\+|\-)? $digit+ | $digit+ e (\+|\-)? $digit+)?
+											{ tok (\p s -> let Right x = parse float "" (simplify s) in NUM p x (length s)) }
+	\*\*									{ tok (\p s -> OP p (convert s) (length s)) }
 	($alpha | \_) [$alpha $digit \_ ]*		{ tok (\p s -> IDENT p s) }
 
 {
@@ -71,13 +71,13 @@ plus = char '+' *> number
 minus = char '-' <:> number
 integer = plus <|> minus <|> number
 
-float = fmap rd $ integer <++> decimal <++> exponent
+float = fmap rd $ number <++> decimal <++> exponent
     where rd       = read :: String -> Float
           decimal  = option "" $ char '.' <:> number
           exponent = option "" $ oneOf "eE" <:> integer
 
-simplify ('-' : num) = "-" ++ "0" ++ (filter (\s -> not $ s == '_') num)
-simplify ('+' : num) = "+" ++ "0" ++ (filter (\s -> not $ s == '_') num)
+-- // simplify ('-' : num) = "-" ++ "0" ++ (filter (\s -> not $ s == '_') num)
+-- // simplify ('+' : num) = "+" ++ "0" ++ (filter (\s -> not $ s == '_') num)
 simplify 		num  = 		  "0" ++ (filter (\s -> not $ s == '_') num)
 
 -- The token type:

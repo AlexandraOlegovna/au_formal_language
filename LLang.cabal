@@ -22,7 +22,7 @@ cabal-version:  >= 1.10
 executable LLang
   main-is: Main.hs
   hs-source-dirs: app, src
-  other-modules: Lexer
+  other-modules: Lexer, Parser, Expr
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -fno-warn-tabs
   build-tools: happy, alex
   build-depends:
