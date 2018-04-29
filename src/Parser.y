@@ -119,7 +119,7 @@ VArgs : VArgs ',' var                      { $1 ++ [$3] }
 
 {
 parseError :: [Token] -> a
-parseError _ = error "Parse error"
+parseError x = error ("Error in " ++ (show $ head x))
 
 
 parseExpr :: String -> Prog
