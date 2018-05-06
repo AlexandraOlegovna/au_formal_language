@@ -2,6 +2,8 @@
 
 Запустить LLang: ```stack build && stack exec -- LLang ~/example.txt```
 
+Запустить LLang: ```stack build && stack exec -- LLang ~/example.txt large``` (для вывода большого дерева)
+
 Запустить тесты: ```stack build && stack exec -- LLang-test```
 
 
