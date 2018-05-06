@@ -1,9 +1,11 @@
 {
-module Parser (parseExpr, showAST, parse) where
+module Parser (parseExpr, showAST, showASTTree, parse) where
 
 import Lexer
 import Expr
 import Data.List
+import Data.Tree
+import Data.Tree.Pretty
 
 }
 
@@ -69,9 +71,7 @@ Stmts : Stmts Stmt                          { $1 ++ [$2] }
 
 
 
-Decl :
-        func var '(' VArgs ')' '{' '}'          { Decl $2 $4 Nothing }
-        | func var '(' VArgs ')' '{' Stmt '}'   { Decl $2 $4 (Just $7)}
+Decl :  func var '(' VArgs ')' '{' Stmts '}'   { Decl $2 $4 $7}
 
 
 Stmt : var ':=' Expr ';'                    { Assign (Var $1) $3 }
@@ -112,8 +112,8 @@ Args : Args ',' Expr                        { $1 ++ [$3] }
        | {- empty -}                           { [] }
 
 
-VArgs : VArgs ',' var                      { $1 ++ [$3] }
-        | var                               { [$1] }
+VArgs : VArgs ',' var                      { $1 ++ [Var $3] }
+        | var                               { [Var $1] }
         | {- empty -}                       { [] }
 
 
@@ -131,9 +131,15 @@ isNotComment (COMMENTS _ _ ) = False
 isNotComment _ = True
 
 
+showASTTree :: (String -> Prog) -> String -> IO ()
+showASTTree parser input = do
+    let ast = makeTree $ parser input
+    putStrLn $ drawVerticalTree ast
+
+
 showAST :: (String -> Prog) -> String -> IO ()
 showAST parser input = do
-    let ast = parser input
-    print ast
+    let ast = makeTree $ parser input
+    putStrLn $ drawTree ast
 
 }

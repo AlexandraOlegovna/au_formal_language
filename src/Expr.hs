@@ -1,8 +1,12 @@
 module Expr where
 
 import Lexer
+import Data.Tree
 
 type Id = String
+
+class ToTree a where
+    makeTree :: a -> Tree String
 
 data Expr = TrueConst
           | FalseConst
@@ -12,6 +16,16 @@ data Expr = TrueConst
           | BinOp Op Expr Expr
           | FCall Id [Expr]
           deriving Eq
+
+instance ToTree Expr where
+    makeTree (TrueConst) = Node ("true") []
+    makeTree (FalseConst) = Node ("false") []
+    makeTree (Var x) = Node ("Var " ++ show x) []
+    makeTree (Num x) = Node ("Num " ++ show x) []
+    makeTree (Unary o x) = Node ("( " ++ show o ++ " " ++ show x ++ " )") []
+    makeTree (BinOp o x y) = Node ("( " ++ show o ++ " " ++ show x ++ " " ++ show y ++ " )") []
+    makeTree (FCall x list) = Node ("Call " ++ show x ++ " " ++ show list) []
+
 
 instance Show Expr where
     show (TrueConst) = "true"
@@ -23,12 +37,15 @@ instance Show Expr where
     show (FCall x list) = "Call " ++ show x ++ " " ++ show list
 
 
-data Decl = Decl Id [Id] (Maybe Stmt)
+data Decl = Decl Id [Expr] [Stmt]
 instance Show Decl where
-    show (Decl name params x) | Just s <- x =
-        "Func:\n  " ++ show name ++ " " ++ show params ++ "\nBody:\n" ++ show' "  " s ++ "\n"
-    show (Decl name params x) | Nothing <- x =
-        "Func:\n  " ++ show name ++ " " ++ show params ++ "\nBody:\n" ++ "\n"
+    show (Decl name params s)=
+        "Func:\n  " ++ show name ++ " " ++ show params ++ "\nBody:\n" ++ concatMap (show' "  ") s ++ "\n"
+
+instance ToTree Decl where
+    makeTree (Decl name params s) =
+        Node ("Func " ++ show name) [Node ("Params") (makeTree <$> params), Node ("Body") (makeTree <$> s)]
+
 
 
 data Prog = Prog [Decl] [Stmt]
@@ -47,6 +64,11 @@ showS [] = ""
 showS (x:xs) = show x ++ showS xs
 
 
+instance ToTree Prog where
+    makeTree (Prog f s) =
+        Node "Program" [Node ("Functions") (makeTree <$> f), Node ("Main") (makeTree <$> s)]
+
+
 data Stmts = St [Stmt] deriving Show
 
 data Stmt = Assign Expr Expr
@@ -56,6 +78,20 @@ data Stmt = Assign Expr Expr
           | WhileLoop Expr [Stmt]
           | FuncCall Id [Expr]
           | IfCond Expr [Stmt] [Stmt] deriving Eq
+
+
+instance ToTree Stmt where
+    makeTree (Assign e1 e2) = Node "Assign" [ Node (show e1) [], makeTree e2 ]
+    makeTree (Write e) = Node "Write" [makeTree e]
+    makeTree (Read e) = Node "Read" [makeTree e]
+    makeTree (Return e) = Node "Return" [makeTree e]
+    makeTree (WhileLoop e1 e2) = Node "While" [ makeTree e1, Node "Do" (makeTree <$> e2) ]
+    makeTree (FuncCall e1 e2) = Node ("Call " ++ show e1) (makeTree <$> e2)
+    makeTree (IfCond e e1 e2) = Node "If" [ makeTree e,
+            Node "Then" (makeTree <$> e1),
+            Node "Else" (makeTree <$> e2) ]
+
+
 
 instance Show Stmt where
     show = show' ""

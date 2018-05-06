@@ -8,8 +8,13 @@ import System.Environment
 
 main :: IO ()
 main = do
-    file <- getArgs
-    when (length file > 0) $ readFile (head file) >>= showAST parseExpr
+    args <- getArgs
+    if (length args > 0) then do
+        content <- readFile (head args)
+        if ((length args) > 1) && (args !! 1 == "large")
+            then showAST parseExpr content
+            else showASTTree parseExpr content
+    else return ()
     -- when (length file > 0) $ readFile (head file) >>=
     --     print . fromStringToTokens
 
