@@ -90,8 +90,8 @@ Expr :  true                                { TrueConst }
         | num                               { Num $1 }
         | var                               { Var $1 }
         | Expr '+' Expr                     { BinOp Plus $1 $3 }
-        | Expr '-' Expr  %prec NEG          { BinOp Minus $1 $3 }
-        | '-' Expr                          { Unary Minus $2 }
+        | Expr '-' Expr                     { BinOp Minus $1 $3 }
+        | '-' Expr     %prec NEG            { Unary Minus $2 }
         | Expr '/' Expr                     { BinOp Div $1 $3 }
         | Expr '%' Expr                     { BinOp Mod $1 $3 }
         | Expr '**' Expr                    { BinOp Pow $1 $3 }

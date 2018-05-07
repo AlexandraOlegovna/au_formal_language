@@ -22,9 +22,9 @@ instance ToTree Expr where
     makeTree (FalseConst) = Node ("false") []
     makeTree (Var x) = Node ("Var " ++ show x) []
     makeTree (Num x) = Node ("Num " ++ show x) []
-    makeTree (Unary o x) = Node ("( " ++ show o ++ " " ++ show x ++ " )") []
-    makeTree (BinOp o x y) = Node ("( " ++ show o ++ " " ++ show x ++ " " ++ show y ++ " )") []
-    makeTree (FCall x list) = Node ("Call " ++ show x ++ " " ++ show list) []
+    makeTree (Unary o x) = Node (show o) [makeTree x]
+    makeTree (BinOp o x y) = Node (show o) [makeTree x, makeTree y]
+    makeTree (FCall x list) = Node ("Call " ++ show x) (makeTree <$> list)
 
 
 instance Show Expr where
