@@ -33,6 +33,10 @@ tokens :-
 	true									{ tok (\p s -> TRUE p) }
 	false 									{ tok (\p s -> FALSE p) }
 	\:\=									{ tok (\p s -> ASSIGN p) }
+	\+\=									{ tok (\p s -> PLUSASSIGN p) }
+	\-\=									{ tok (\p s -> MINUSASSIGN p) }
+	\*\=									{ tok (\p s -> MULTASSIGN p) }
+	\/\=									{ tok (\p s -> DIVASSIGN p) }
 	"//".*                          		{ tok (\p s -> COMMENTS p s) }
 	"/*" ([~[\*] \n])* [\*]+ ((~[\*\/]|\n) ([~[\*] \n])* [\*]+)* "/"
 											{ tok (\p s -> ML_COMMENTS p s) }
@@ -41,6 +45,8 @@ tokens :-
 	($digit+ | \. | $digit+ \.) ($digit+ | e (\+|\-)? $digit+ | $digit+ e (\+|\-)? $digit+)?
 											{ tok (\p s -> let Right x = parse float "" (simplify s) in NUM p x (length s)) }
 	\*\*									{ tok (\p s -> OP p (convert s) (length s)) }
+	\?										{ tok (\p s -> QUESTION p) }
+	\:										{ tok (\p s -> COLON p) }
 	($alpha | \_) [$alpha $digit \_ ]*		{ tok (\p s -> IDENT p s) }
 
 {
@@ -96,10 +102,16 @@ data Token =
 	OPEN_BRACE AlexPosn	|
 	CLOSE_BRACE AlexPosn|
 	SEMI AlexPosn		|
+	COLON AlexPosn		|
 	COMMA AlexPosn		|
+	QUESTION AlexPosn	|
 	TRUE AlexPosn		|
 	FALSE AlexPosn		|
 	ASSIGN AlexPosn		|
+	PLUSASSIGN AlexPosn		|
+	MINUSASSIGN AlexPosn		|
+	MULTASSIGN AlexPosn		|
+	DIVASSIGN AlexPosn		|
 	OP AlexPosn Op Int	|
 	IDENT AlexPosn String	|
 	COMMENTS AlexPosn String |
@@ -117,6 +129,8 @@ instance Show Token where
 	show (WRITE (AlexPn x z y)) = "KW_Write(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "write" - 1) ++ ")"
 	show (FUNCTION (AlexPn x z y)) = "KW_Function(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "function" - 1) ++ ")"
 	show (RETURN (AlexPn x z y)) = "KW_Return(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "return" - 1) ++ ")"
+	show (QUESTION (AlexPn x z y)) = "KW_Qestion(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "?" - 1) ++ ")"
+	show (COLON (AlexPn x z y)) = "KW_Colon(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length ":" - 1) ++ ")"
 	show (OPEN_PAR (AlexPn x z y)) = "KW_Open_Par(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "(" - 1) ++ ")"
 	show (CLOSE_PAR (AlexPn x z y)) = "KW_Close_Par(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length ")" - 1) ++ ")"
 	show (OPEN_BRACE (AlexPn x z y)) = "KW_Open_Brace(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "{" - 1) ++ ")"
@@ -126,6 +140,10 @@ instance Show Token where
 	show (TRUE (AlexPn x z y)) = "True(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "true" - 1) ++ ")"
 	show (FALSE (AlexPn x z y)) = "False(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "false" - 1) ++ ")"
 	show (ASSIGN (AlexPn x z y)) = "Assign(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length ":=" - 1) ++ ")"
+	show (PLUSASSIGN (AlexPn x z y)) = "Plus_Assign(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "+=" - 1) ++ ")"
+	show (MINUSASSIGN (AlexPn x z y)) = "Minus_Assign(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "-=" - 1) ++ ")"
+	show (MULTASSIGN (AlexPn x z y)) = "Mult_Assign(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "*=" - 1) ++ ")"
+	show (DIVASSIGN (AlexPn x z y)) = "Div_Assign(" ++ show z ++ ", " ++ show y ++ ", " ++ show (y + length "/=" - 1) ++ ")"
 	show (OP (AlexPn x z y) o l) = "Op(" ++ show o ++ ", " ++ show z ++ ", " ++ show y ++ ", " ++ show (y + l - 1) ++ ")"
 	show (COMMENTS (AlexPn x z y) s) = "Comments(" ++ show s ++ ", " ++ show z ++ ", " ++ show y ++ ", " ++ show (y + (length s) - 1) ++ ")"
 	show (ML_COMMENTS (AlexPn x z y) s) = "ML_Comments(" ++ show s ++ ", " ++ show z ++ ", " ++ show y ++ ", " ++ show (y + (length s) - 1) ++ ")"

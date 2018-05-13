@@ -28,6 +28,10 @@ import Data.Tree.Pretty
     true        { TRUE _            }
     false       { FALSE _           }
     ':='        { ASSIGN _          }
+    '+='        { PLUSASSIGN _      }
+    '-='        { MINUSASSIGN _     }
+    '*='        { MULTASSIGN _      }
+    '/='        { DIVASSIGN _       }
     ';'         { SEMI _            }
     '+'         { OP _ Plus _       }
     '-'         { OP _ Minus _      }
@@ -48,6 +52,8 @@ import Data.Tree.Pretty
     '{'         { OPEN_BRACE _      }
     '}'         { CLOSE_BRACE _     }
     ','         { COMMA _           }
+    '?'         { QUESTION _        }
+    ':'         { COLON _           }
 
 
 %nonassoc '&&' '||'
@@ -77,11 +83,18 @@ Decl :  func var '(' VArgs ')' '{' Stmts '}'   { Decl $2 $4 $7}
 Stmt : var ':=' Expr ';'                    { Assign (Var $1) $3 }
      | write '(' Expr ')' ';'               { Write $3 }
      | read '(' Expr ')' ';'                { Read $3 }
-     | while Expr do '{' Stmts '}'           { WhileLoop $2 $5 }
+     | while Expr do '{' Stmts '}'          { WhileLoop $2 $5 }
      | if Expr then '{' Stmts '}' else '{' Stmts '}'
                                             { IfCond $2 $5 $9 }
      | var '(' Args ')' ';'                 { FuncCall $1 $3}
      | return Expr ';'                      { Return $2 }
+     | var ':=' '(' Expr ')' '?' Expr ':' Expr ';'
+                                            { IfCond $4 [Assign (Var $1) $7] [Assign (Var $1) $9] }
+     | '+''+' var ';'                       { Assign (Var $3) (BinOp Plus (Var $3) (Num 1.0)) }
+     | var '+=' Expr ';'                    { Assign (Var $1) (BinOp Plus (Var $1) $3) }
+     | var '-=' Expr ';'                    { Assign (Var $1) (BinOp Minus (Var $1) $3) }
+     | var '*=' Expr ';'                    { Assign (Var $1) (BinOp Mult (Var $1) $3) }
+     | var '/=' Expr ';'                    { Assign (Var $1) (BinOp Div (Var $1) $3) }
 
 
 Expr :  true                                { TrueConst }
