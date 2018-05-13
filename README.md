@@ -113,3 +113,54 @@ while (l + 1 <= 8 && 6 % 2) do {
 }
 
 ```
+
+## Спецификация синтаксиса:
+
+```
+PROGRAM :
+    | DECL* STMT*
+
+
+DECL :
+    | function VAR ( ARGS ) { STMT* }
+
+
+STMT :
+    | VAR := EXRP ;
+    | while EXPR do { STMT* }
+    | if EXPR then { STMT* } else { STMT*  }
+    | VAR ( ARGS ) ;
+    | return EXPR ;
+    | write ( EXPR ) ;
+    | read ( EXPR ) ;
+    | ++ VAR ;
+    | VAR += EXPR ;
+    | VAR -= EXPR ;
+    | VAR *= EXPR ;
+    | VAR /= EXPR ;
+    | var := ( EXPR ) ? EXPR : EXPR ;
+
+
+EXPR :
+    | true
+    | false
+    | var ( ARGS )
+    | num
+    | var
+    | EXPR + EXPR
+    | EXPR - EXPR
+    | - EXPR
+    | EXPR / EXPR
+    | EXPR % EXPR
+    | EXPR ** EXPR
+    | EXPR * EXPR
+    | EXPR == EXPR
+    | EXPR != EXPR
+    | EXPR >= EXPR
+    | EXPR > EXPR
+    | EXPR <= EXPR
+    | EXPR < EXPR
+    | EXPR && EXPR
+    | EXPR || EXPR
+    | ( EXPR )
+```
